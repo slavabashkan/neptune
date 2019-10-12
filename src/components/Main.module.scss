@@ -1,0 +1,21 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.main {
+  background-color: $black;
+  
+  :global(.Resizer.vertical) {
+    background-color: $black;
+    width: 8px;
+    cursor: col-resize;
+    background-clip: padding-box;
+    margin: 0 -3px;
+    border-left: 3px solid rgba(255, 255, 255, 0);
+    border-right: 3px solid rgba(255, 255, 255, 0);
+    box-sizing: border-box;
+    z-index: $pt-z-index-content;
+  }
+
+  :global(.Pane) {
+    display: flex;
+  }
+}
