@@ -1,11 +1,12 @@
 import React from 'react';
 import { Menu, MenuItem } from '@blueprintjs/core';
 import libraryApi from '../api/libraryApi';
+import { callApi } from '../utils/viewHelpers';
 
 const LibraryHeaderContextMenu: React.FC = () => {
   
-  const handleReloadClick = (): void => {
-    libraryApi.reload();
+  const handleReloadClick = async (): Promise<void> => {
+    await callApi(libraryApi.reload);
   }
 
   return (
