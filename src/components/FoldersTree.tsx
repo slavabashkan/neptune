@@ -49,11 +49,16 @@ const FoldersTree: React.FC = () => {
     setItems([...items]);
   }
 
+  const handleNodeDoubleClick = (node: ITreeNode): void => {
+    node.isExpanded ? handleNodeCollapse(node) : handleNodeExpand(node);
+  }
+
   return <Tree
     contents={items}
     onNodeExpand={handleNodeExpand}
     onNodeCollapse={handleNodeCollapse}
-    onNodeClick={handleNodeClick} />;
+    onNodeClick={handleNodeClick}
+    onNodeDoubleClick={handleNodeDoubleClick} />;
 }
 
 export default FoldersTree;
