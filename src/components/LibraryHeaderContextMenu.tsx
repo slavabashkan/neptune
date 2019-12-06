@@ -1,6 +1,6 @@
 import React from 'react';
 import { Menu, MenuItem } from '@blueprintjs/core';
-import libraryApi from '../api/libraryApi';
+import * as libraryApi from '../api/libraryApi';
 import { callApi } from '../utils/viewHelpers';
 
 const LibraryHeaderContextMenu: React.FC = () => {
