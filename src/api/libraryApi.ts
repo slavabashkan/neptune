@@ -6,7 +6,7 @@ import { FoldersTreeItem } from "../models/FoldersTreeItem";
 
 /** Scan library folder and reload folders and media information stored in db */
 export async function reload(): Promise<void>  {
-  throw new Error('LibraryApi.reload() is not implemented');
+  console.log((window as any).ls());
 }
 
 /** Fetch folders tree from db. */

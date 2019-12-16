@@ -8,8 +8,18 @@ const isDev = require('electron-is-dev');
 let mainWindow;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({width: 900, height: 680});
-  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
+  const appUrl = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
+  const preloadPath = path.join(__dirname, 'preload.js');
+
+  mainWindow = new BrowserWindow({
+    width: 900,
+    height: 680,
+    webPreferences: {
+      preload: preloadPath
+    }
+  });
+
+  mainWindow.loadURL(appUrl);
   mainWindow.on('closed', () => mainWindow = null);
 }
 
