@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tree, ITreeNode } from '@blueprintjs/core';
 import { FoldersTreeItem } from '../models/FoldersTreeItem';
+import { callApi } from '../utils/viewHelpers';
 import * as libraryApi from '../api/libraryApi';
 
 const getTreeItems = (folders: FoldersTreeItem[]): ITreeNode<FoldersTreeItem>[] =>
@@ -12,11 +13,12 @@ const getTreeItems = (folders: FoldersTreeItem[]): ITreeNode<FoldersTreeItem>[] 
     });
 
 const FoldersTree: React.FC = () => {
+
   const [items, setItems] = useState([] as ITreeNode<FoldersTreeItem>[]);
 
   useEffect(() => {
     async function fetchFolders(): Promise<void> {
-      const folders = await libraryApi.fetchFoldersTree();
+      const folders = await callApi(libraryApi.fetchFoldersTree, []);
       const treeItems = getTreeItems(folders);
       setItems(treeItems);
     }
