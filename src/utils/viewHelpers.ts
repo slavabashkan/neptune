@@ -9,6 +9,7 @@ export const callApi = async <T>(apiFunction: () => Promise<T>, defaultResult: T
   try {
     return await apiFunction();
   } catch (e) {
+    console.error(e);
     ErrorPopupPortal.show({ message: e.message, icon: 'error', intent: Intent.DANGER, timeout: 0 });
     return defaultResult;
   }

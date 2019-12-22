@@ -1,9 +1,9 @@
 import { FoldersTreeItem } from "../models/FoldersTreeItem";
-import getDb from '../db';
+import { getDbInstance, fetchLastId } from '../db';
 import { Folder, LibraryRoot } from '../models/db';
 import dependenciesBridge from '../dependenciesBridge';
 
-const { path } = dependenciesBridge;
+const { fs, path } = dependenciesBridge;
 
 /**
  * Media library actions
@@ -11,25 +11,115 @@ const { path } = dependenciesBridge;
 
 /** Scan library folder and reload folders and media information stored in db */
 export const reload = async (): Promise<void>  => {
-  throw new Error('Not implemented');
+  const foldersToInsert = await readAllFoldersFromDiskInSequentialOrder();
+  await rewriteFoldersInDb(foldersToInsert);
 }
 
-/** Fetch folders tree from db. */
+const readAllFoldersFromDiskInSequentialOrder = async (): Promise<Folder[]> => {
+  const roots = await fetchLibraryRoots();
+  let foldersLastId = await fetchLastId('Folders');
+
+  const foldersToInsert: Folder[] = [];
+
+  for (const root of roots) {
+    if (!fs.existsSync(root.path)) {
+      console.warn(`Root path '${root.path}' not found. Entry skipped.`);
+      continue;
+    }
+
+    const rootFolder: Folder = {
+      id: ++foldersLastId,
+      name: path.basename(root.path),
+      date: null,
+      parentId: null,
+      libraryRootId: root.id
+    };
+    foldersToInsert.push(rootFolder);
+
+    await readSubfoldersFromDiskToArray(rootFolder, root.path, foldersToInsert);
+    foldersLastId = foldersToInsert[foldersToInsert.length - 1].id;
+
+    // todo: fill dates
+  }
+
+  return foldersToInsert;
+}
+
+const readSubfoldersFromDiskToArray = async (parentFolder: Folder, parentFolderPath: string, targetArray: Folder[]): Promise<void> => {
+  let lastId = parentFolder.id;
+
+  const foldersPaths = (await fs.promises.readdir(parentFolderPath, { withFileTypes: true }))
+    .filter(d => d.isDirectory())
+    .map(d => path.join(parentFolderPath, d.name));
+
+  for (const folderPath of foldersPaths) {
+    const folder: Folder = {
+      id: ++lastId,
+      name: path.basename(folderPath),
+      date: null,
+      parentId: parentFolder.id,
+      libraryRootId: null
+    };
+    targetArray.push(folder);
+
+    await readSubfoldersFromDiskToArray(folder, folderPath, targetArray);
+    lastId = targetArray[targetArray.length - 1].id;
+  }
+}
+
+const rewriteFoldersInDb = async (foldersToInsertInSequentalOrder: Folder[]): Promise<void> => {
+  if (!foldersToInsertInSequentalOrder.length) {
+    return;
+  }
+
+  const db = await getDbInstance();
+
+  try {
+    await db.run('begin');
+
+    const deleteQuery = 'delete from Folders';
+    await db.run(deleteQuery);
+
+    const fieldNames = Object.keys(foldersToInsertInSequentalOrder[0]);
+    const insertQuery = `insert into Folders (${fieldNames.join(', ')}) values (${fieldNames.map(f => '$' + f).join(', ')})`;
+
+    for (const folder of foldersToInsertInSequentalOrder) {
+      const params: any = {};
+      for (const field of fieldNames) {
+        params['$' + field] = (folder as any)[field];
+      }
+
+      await db.run(insertQuery, params);
+    }
+
+    await db.run('commit')
+  } catch (error) {
+    await db.run('rollback');
+    throw error;
+  }
+}
+
+/** Fetch folders tree from db */
 export const fetchFoldersTree = async (): Promise<FoldersTreeItem[]> => {
-  const db = await getDb();
+  const db = await getDbInstance();
   
-  const getRootsQuery = 'select * from LibraryRoots';
-  const roots = await db.all<LibraryRoot>(getRootsQuery);
+  const roots = await fetchLibraryRoots();
 
   const getFoldersQuery = 'select * from Folders';
   const folders = await db.all<Folder>(getFoldersQuery);
 
   return roots
-    .map(r => getFoldersByRoot(r, folders))
+    .map(r => getFoldersByRootFromArray(r, folders))
     .filter(r => r != null) as FoldersTreeItem[];
 }
 
-const getFoldersByRoot = (root: LibraryRoot, allFolders: Folder[]): FoldersTreeItem|null => {
+const fetchLibraryRoots = async (): Promise<LibraryRoot[]> => {
+  const db = await getDbInstance();
+  const query = 'select * from LibraryRoots';
+  return await db.all<LibraryRoot>(query); 
+}
+
+const getFoldersByRootFromArray = (root: LibraryRoot, allFolders: Folder[]): FoldersTreeItem|null => {
   const rootFolder = allFolders.find(f => f.libraryRootId === root.id && !f.parentId);
 
   if (!rootFolder) {
@@ -41,11 +131,11 @@ const getFoldersByRoot = (root: LibraryRoot, allFolders: Folder[]): FoldersTreeI
     name: rootFolder.name,
     date: rootFolder.date,
     path: root.path,
-    subfolders: getSubfolders(rootFolder, root.path, allFolders)
+    subfolders: getSubfoldersFromArray(rootFolder, root.path, allFolders)
   };
 }
 
-const getSubfolders = (parent: Folder, parentPath: string, allFolders: Folder[]): FoldersTreeItem[] => {
+const getSubfoldersFromArray = (parent: Folder, parentPath: string, allFolders: Folder[]): FoldersTreeItem[] => {
   return allFolders
     .filter(f => f.parentId === parent.id)
     .map(f => {
@@ -55,7 +145,7 @@ const getSubfolders = (parent: Folder, parentPath: string, allFolders: Folder[])
         name: f.name,
         date: f.date,
         path: folderPath,
-        subfolders: getSubfolders(f, folderPath, allFolders)
+        subfolders: getSubfoldersFromArray(f, folderPath, allFolders)
       }
     });
 }

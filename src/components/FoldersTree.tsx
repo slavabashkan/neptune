@@ -6,7 +6,7 @@ import * as libraryApi from '../api/libraryApi';
 
 const getTreeItems = (folders: FoldersTreeItem[]): ITreeNode<FoldersTreeItem>[] =>
   folders
-    .sort((a, b) => b.date ? b.date.localeCompare(a.date || '') : -1)
+    .sort((a, b) => b.date ? b.date.localeCompare(a.date || '') : a.name.localeCompare(b.name))
     .map(f => {
       const childNodes = getTreeItems(f.subfolders);
       return { id: f.id, label: f.name, childNodes: childNodes.length ? childNodes : undefined , nodeData: f };
@@ -47,7 +47,6 @@ const FoldersTree: React.FC = () => {
 
   const handleNodeClick = (node: ITreeNode): void => {
     forEachNode(items, n => n.isSelected = n === node);
-    console.log(items);
     setItems([...items]);
   }
 
