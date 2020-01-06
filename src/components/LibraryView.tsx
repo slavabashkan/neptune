@@ -21,11 +21,13 @@ const LibraryView: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className={styles.container}>
       <div className={`context-menu-node ${(isContextMenuOpen ? 'context-menu-open' : '')}`} onContextMenu={showContextMenu}>
         <h3 className={styles.header}>Library</h3>
-      </div>      
-      <FoldersTree/>
+      </div>
+      <div className={styles.foldersTree}>
+        <FoldersTree/>
+      </div>
     </div>
   );
 

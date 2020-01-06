@@ -1,7 +1,17 @@
 @import "~@blueprintjs/core/lib/scss/variables";
 
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .header {
   margin: 0;
   margin-bottom: $pt-grid-size;
   user-select: none;
+}
+
+.foldersTree {
+  overflow-y: auto;
 }
