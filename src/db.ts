@@ -1,5 +1,5 @@
-import dependenciesBridge from './dependenciesBridge';
 import { Database } from 'sqlite';
+import dependenciesBridge from './dependenciesBridge';
 
 /**
  * Database interaction methods
@@ -20,11 +20,11 @@ export const getDbInstance = async (): Promise<Database> => {
   }
 
   return instance;
-}
+};
 
 /** Returns last value of sequental identifier for specified table */
 export const fetchLastId = async (tableName: string): Promise<number> => {
   const db = await getDbInstance();
   const query = 'select seq from sqlite_sequence where name = $tableName';
   return (await db.get<{seq: number}>(query, { $tableName: tableName })).seq;
-}
+};

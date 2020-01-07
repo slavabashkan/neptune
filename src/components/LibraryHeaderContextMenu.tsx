@@ -7,14 +7,14 @@ const LibraryHeaderContextMenu: React.FC = () => {
 
   const handleReloadClick = async (): Promise<void> => {
     await callApi(libraryApi.reload, undefined);
-  }
+  };
 
   return (
     <Menu>
-      <MenuItem onClick={handleReloadClick} icon='refresh' text='Reload'/>
+      <MenuItem onClick={handleReloadClick} icon="refresh" text="Reload" />
     </Menu>
   );
-  
-}
+
+};
 
 export default LibraryHeaderContextMenu;

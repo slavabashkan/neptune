@@ -7,6 +7,7 @@
   },
   "extends": [
     "eslint:recommended",
+    "airbnb",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
@@ -22,6 +23,66 @@
     "react"
   ],
   "rules": {
-    "react/prop-types": 0
+    // braces for arrow funcs could be omited
+    "arrow-parens": ["error", "as-needed"],
+
+    // functions can be used before their definitions
+    "no-use-before-define": ["error", { "functions": false }],
+    "@typescript-eslint/no-use-before-define": ["error", { "functions": false }],
+
+    // disabling line length limitation
+    "max-len": "off",
+
+    // multiple empty lines not allowed
+    "no-multiple-empty-lines": ["error", { "max": 1 }],
+
+    // enabling some syntax rules
+    "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+    
+    // enabling "continue" statement for controlling loops
+    "no-continue": "off",
+
+    // disabling param reassignment, but allowing param props reassignment
+    "no-param-reassign": ["error", { "props": false }],
+
+    // enabling "++" operator
+    "no-plusplus": "off",
+
+    // changing severity of using "await" inside loops
+    "no-await-in-loop": "warn",
+
+    // each member of object should be placed on the new line if all members aren't sharing one line
+    "object-curly-newline": ["error", { "multiline": true }],
+
+    // keep operators at the end of the line in multiline statements
+    "operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" } }],
+
+    // disabling padding control inside of blocks
+    "padded-blocks": "off",
+
+    // code blocks should be followed by blank line
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "block-like", "next": "*" }
+    ],
+
+    // do not use extensions in imports
+    "import/extensions": ["error", "never"],
+
+    // changing severity of using single exports in modules
+    "import/prefer-default-export": "warn",
+
+    // treat TSX-files as JSX
+    "react/jsx-filename-extension": ["warn", { "extensions": [".jsx", ".tsx"] }],
+
+    // additional type checking is redundant
+    "react/prop-types": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }

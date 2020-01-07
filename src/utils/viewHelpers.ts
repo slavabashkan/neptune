@@ -1,3 +1,5 @@
+/* eslint-disable import/prefer-default-export */
+
 import { Intent } from '@blueprintjs/core';
 import { ErrorPopupPortal } from '../components/Popups';
 
@@ -9,8 +11,9 @@ export const callApi = async <T>(apiFunction: () => Promise<T>, defaultResult: T
   try {
     return await apiFunction();
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e);
     ErrorPopupPortal.show({ message: e.message, icon: 'error', intent: Intent.DANGER, timeout: 0 });
     return defaultResult;
   }
-}
+};

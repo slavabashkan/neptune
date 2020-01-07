@@ -4,13 +4,14 @@ import { FoldersTreeItem } from '../models/FoldersTreeItem';
 import { callApi } from '../utils/viewHelpers';
 import * as libraryApi from '../api/libraryApi';
 
-const getTreeItems = (folders: FoldersTreeItem[]): ITreeNode<FoldersTreeItem>[] =>
+const getTreeItems = (folders: FoldersTreeItem[]): ITreeNode<FoldersTreeItem>[] => (
   folders
-    .sort((a, b) => b.date ? b.date.localeCompare(a.date || '') : a.name.localeCompare(b.name))
+    .sort((a, b) => (b.date ? b.date.localeCompare(a.date || '') : a.name.localeCompare(b.name)))
     .map(f => {
       const childNodes = getTreeItems(f.subfolders);
-      return { id: f.id, label: f.name, childNodes: childNodes.length ? childNodes : undefined , nodeData: f };
-    });
+      return { id: f.id, label: f.name, childNodes: childNodes.length ? childNodes : undefined, nodeData: f };
+    })
+);
 
 const FoldersTree: React.FC = () => {
 
@@ -33,7 +34,7 @@ const FoldersTree: React.FC = () => {
         forEachNode(n.childNodes, callback);
       }
     });
-  }
+  };
 
   const handleNodeExpand = (node: ITreeNode): void => {
     node.isExpanded = true;
@@ -46,20 +47,27 @@ const FoldersTree: React.FC = () => {
   };
 
   const handleNodeClick = (node: ITreeNode): void => {
-    forEachNode(items, n => n.isSelected = n === node);
+    forEachNode(items, n => { n.isSelected = n === node; });
     setItems([...items]);
-  }
+  };
 
   const handleNodeDoubleClick = (node: ITreeNode): void => {
-    node.isExpanded ? handleNodeCollapse(node) : handleNodeExpand(node);
-  }
+    // eslint-disable-next-line no-unused-expressions
+    node.isExpanded
+      ? handleNodeCollapse(node)
+      : handleNodeExpand(node);
+  };
 
-  return <Tree
-    contents={items}
-    onNodeExpand={handleNodeExpand}
-    onNodeCollapse={handleNodeCollapse}
-    onNodeClick={handleNodeClick}
-    onNodeDoubleClick={handleNodeDoubleClick} />;
-}
+  return (
+    <Tree
+      contents={items}
+      onNodeExpand={handleNodeExpand}
+      onNodeCollapse={handleNodeCollapse}
+      onNodeClick={handleNodeClick}
+      onNodeDoubleClick={handleNodeDoubleClick}
+    />
+  );
+
+};
 
 export default FoldersTree;

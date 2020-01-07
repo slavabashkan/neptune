@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { ContextMenu } from '@blueprintjs/core';
 import styles from './LibraryView.module.scss';
 import FoldersTree from './FoldersTree';
 import LibraryHeaderContextMenu from './LibraryHeaderContextMenu';
-import { ContextMenu } from '@blueprintjs/core';
 
 const LibraryView: React.FC = () => {
 
@@ -12,13 +12,14 @@ const LibraryView: React.FC = () => {
     e.preventDefault();
 
     ContextMenu.show(
-      <LibraryHeaderContextMenu/>,
+      <LibraryHeaderContextMenu />,
       { left: e.clientX, top: e.clientY },
       () => setIsContextMenuOpen(false),
-      true);
-    
+      true,
+    );
+
     setIsContextMenuOpen(true);
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -26,11 +27,11 @@ const LibraryView: React.FC = () => {
         <h3 className={styles.header}>Library</h3>
       </div>
       <div className={styles.foldersTree}>
-        <FoldersTree/>
+        <FoldersTree />
       </div>
     </div>
   );
 
-}
+};
 
 export default LibraryView;
