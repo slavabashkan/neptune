@@ -15,7 +15,7 @@ const LibraryView: React.FC = () => {
       <LibraryHeaderContextMenu />,
       { left: e.clientX, top: e.clientY },
       () => setIsContextMenuOpen(false),
-      true,
+      true
     );
 
     setIsContextMenuOpen(true);

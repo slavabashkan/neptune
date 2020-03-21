@@ -33,7 +33,7 @@ async function readAllFoldersFromDiskInSequentialOrder(): Promise<Folder[]> {
       name: path.basename(root.path),
       date: null,
       parentId: null,
-      libraryRootId: root.id,
+      libraryRootId: root.id
     };
     foldersToInsert.push(rootFolder);
 
@@ -60,7 +60,7 @@ async function readSubfoldersFromDiskToArray(parentFolder: Folder, parentFolderP
       name: path.basename(folderPath),
       date: null,
       parentId: parentFolder.id,
-      libraryRootId: null,
+      libraryRootId: null
     };
     targetArray.push(folder);
 
@@ -137,7 +137,7 @@ function getFoldersByRootFromArray(root: LibraryRoot, allFolders: Folder[]): Fol
     name: rootFolder.name,
     date: rootFolder.date,
     path: root.path,
-    subfolders: getSubfoldersFromArray(rootFolder, root.path, allFolders),
+    subfolders: getSubfoldersFromArray(rootFolder, root.path, allFolders)
   };
 }
 
@@ -151,7 +151,7 @@ function getSubfoldersFromArray(parent: Folder, parentPath: string, allFolders: 
         name: f.name,
         date: f.date,
         path: folderPath,
-        subfolders: getSubfoldersFromArray(f, folderPath, allFolders),
+        subfolders: getSubfoldersFromArray(f, folderPath, allFolders)
       };
     });
 }
