@@ -20,7 +20,8 @@
   },
   "plugins": [
     "@typescript-eslint",
-    "react"
+    "react",
+    "react-hooks"
   ],
   "rules": {
     // braces for arrow funcs could be omited
@@ -78,7 +79,11 @@
     // additional type checking is redundant
     "react/prop-types": "off",
 
-    "comma-dangle": ["error", "never"]
+    // trailing commas are redundant
+    "comma-dangle": ["error", "never"],
+
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "settings": {
     "import/resolver": {

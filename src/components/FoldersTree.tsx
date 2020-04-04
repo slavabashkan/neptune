@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Tree, ITreeNode } from '@blueprintjs/core';
+import { ITreeNode, Tree } from '@blueprintjs/core';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFoldersTree } from '../actions';
+import useUpdateEffect from '../hooks/useUpdateEffect';
 import { FoldersTreeItem } from '../models/FoldersTreeItem';
-import { callApi } from '../utils/viewHelpers';
-import * as libraryApi from '../api/libraryApi';
+import { RootState } from '../store/rootReducer';
 
 const getTreeItems = (folders: FoldersTreeItem[]): ITreeNode<FoldersTreeItem>[] => (
   folders
@@ -15,17 +17,17 @@ const getTreeItems = (folders: FoldersTreeItem[]): ITreeNode<FoldersTreeItem>[] 
 
 const FoldersTree: React.FC = () => {
 
-  const [items, setItems] = useState([] as ITreeNode<FoldersTreeItem>[]);
+  const { foldersTree } = useSelector<RootState, RootState>(state => state);
+  const [items, setItems] = useState(getTreeItems(foldersTree));
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    async function fetchFolders(): Promise<void> {
-      const folders = await callApi(libraryApi.fetchFoldersTree, []);
-      const treeItems = getTreeItems(folders);
-      setItems(treeItems);
-    }
+    dispatch(fetchFoldersTree());
+  }, [dispatch]);
 
-    fetchFolders();
-  }, []);
+  useUpdateEffect(() => {
+    setItems(getTreeItems(foldersTree));
+  }, [foldersTree]);
 
   const forEachNode = (nodes: ITreeNode[], callback: (node: ITreeNode) => void): void => {
     nodes.forEach(n => {

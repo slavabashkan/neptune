@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
 import { ContextMenu } from '@blueprintjs/core';
-import styles from './LibraryView.module.scss';
+import React, { useState } from 'react';
+import { Provider } from 'react-redux';
+import store from '../store';
 import FoldersTree from './FoldersTree';
 import LibraryHeaderContextMenu from './LibraryHeaderContextMenu';
+import styles from './LibraryView.module.scss';
 
 const LibraryView: React.FC = () => {
 
@@ -12,7 +14,7 @@ const LibraryView: React.FC = () => {
     e.preventDefault();
 
     ContextMenu.show(
-      <LibraryHeaderContextMenu />,
+      <Provider store={store}><LibraryHeaderContextMenu /></Provider>,
       { left: e.clientX, top: e.clientY },
       () => setIsContextMenuOpen(false),
       true
