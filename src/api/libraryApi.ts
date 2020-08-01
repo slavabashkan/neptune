@@ -70,11 +70,11 @@ async function readSubfoldersFromDiskToArray(parentFolder: Folder, parentFolderP
   }
 }
 
+/**
+ * Rewrite folders structure.
+ * @param foldersToInsertInSequentalOrder Folders to insert. Array should be sorted from root to leafs because of sequental inserting to db.
+ */
 async function rewriteFoldersInDb(foldersToInsertInSequentalOrder: Folder[]): Promise<void> {
-  if (!foldersToInsertInSequentalOrder.length) {
-    return;
-  }
-
   const db = await getDbInstance();
 
   try {
@@ -83,19 +83,21 @@ async function rewriteFoldersInDb(foldersToInsertInSequentalOrder: Folder[]): Pr
     const deleteQuery = 'delete from Folders';
     await db.run(deleteQuery);
 
-    const fieldNames = Object.keys(foldersToInsertInSequentalOrder[0]);
-    const insertQuery = `insert into Folders (${fieldNames.join(', ')}) values (${fieldNames.map(f => `$${f}`).join(', ')})`;
+    if (foldersToInsertInSequentalOrder.length > 0) {
+      const fieldNames = Object.keys(foldersToInsertInSequentalOrder[0]);
+      const insertQuery = `insert into Folders (${fieldNames.join(', ')}) values (${fieldNames.map(f => `$${f}`).join(', ')})`;
 
-    for (const folder of foldersToInsertInSequentalOrder) {
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-      const params: any = {};
-      for (const field of fieldNames) {
-        params[`$${field}`] = (folder as any)[field];
+      for (const folder of foldersToInsertInSequentalOrder) {
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        const params: any = {};
+        for (const field of fieldNames) {
+          params[`$${field}`] = (folder as any)[field];
+        }
+        /* eslint-enable @typescript-eslint/no-explicit-any */
+
+        // eslint-disable-next-line no-await-in-loop
+        await db.run(insertQuery, params);
       }
-      /* eslint-enable @typescript-eslint/no-explicit-any */
-
-      // eslint-disable-next-line no-await-in-loop
-      await db.run(insertQuery, params);
     }
 
     await db.run('commit');
