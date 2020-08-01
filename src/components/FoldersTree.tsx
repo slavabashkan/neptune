@@ -1,7 +1,7 @@
 import { ITreeNode, Tree } from '@blueprintjs/core';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFoldersTree } from '../actions';
+import { fetchFoldersTree, setCurrentFolder } from '../actions';
 import useUpdateEffect from '../hooks/useUpdateEffect';
 import { FoldersTreeItem } from '../models/FoldersTreeItem';
 import { RootState } from '../store/rootReducer';
@@ -48,9 +48,10 @@ const FoldersTree: React.FC = () => {
     setItems([...items]);
   };
 
-  const handleNodeClick = (node: ITreeNode): void => {
+  const handleNodeClick = (node: ITreeNode<FoldersTreeItem>): void => {
     forEachNode(items, n => { n.isSelected = n === node; });
     setItems([...items]);
+    dispatch(setCurrentFolder(node.nodeData));
   };
 
   const handleNodeDoubleClick = (node: ITreeNode): void => {

@@ -1,0 +1,14 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.folderHeader {
+  padding: $pt-grid-size;
+}
+
+.folderName {
+  margin: 0;
+  margin-bottom: $pt-grid-size;
+}
+
+.dates {
+  color: $gray1;
+}
